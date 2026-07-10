@@ -594,11 +594,7 @@ async def upload(bot: Client, m: Message):
                         text = await resp.text()
                         url = re.search(r"(https://.*?playlist.m3u8.*?)\"", text).group(1)
                         
-            elif 'media-cdn.classplusapp.com/drm/' in url:
-                url = f"https://dragoapi.vercel.app/video/{url}"
-
            elif "classplusapp" in url:
-                # Agar link pehle se hi m3u8 hai, toh direct process karo
                 if ".m3u8" in url:
                     pass
                 else:
@@ -620,7 +616,6 @@ async def upload(bot: Client, m: Message):
                             url = api_data['url']
                     except Exception:
                         pass
-
             elif "https://appx-transcoded-videos.livelearn.in/videos/rozgar-data/" in url:
                 url = url.replace("https://appx-transcoded-videos.livelearn.in/videos/rozgar-data/", "")
                 name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "@").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
