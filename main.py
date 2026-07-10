@@ -161,7 +161,7 @@ caption = (
 # Start command handler
 @bot.on_message(filters.command(["start"]))
 async def start_command(bot: Client, message: Message):
-    await bot.send_photo(chat_id=message.chat.id, photo=random_image_url, caption=caption, reply_markup=keyboard)
+    await bot.send_message(chat_id=message.chat.id, text=caption, reply_markup=keyboard)
     
 # Stop command handler
 @bot.on_message(filters.command("stop"))
