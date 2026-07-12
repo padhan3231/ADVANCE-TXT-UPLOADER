@@ -465,46 +465,51 @@ async def upload(bot: Client, m: Message):
     
     try:    
         with open(x, "r", encoding='utf-8') as f:
-            content = f.read().splitlines() # Ye saare khali Enter/spaces ko theek karega
+            content = f.read().splitlines()
         
         links = []
         for i in content:
-            i = i.strip() # Extra spaces hatana
-            if not i: 
-                continue # Agar line khali hai, to aage badho
-
-            # Agar line mein "://" hai tabhi kaam karenge
-            if "://" in i:
-                # Behtar tarika: "https://" ya "http://" ko bacha kar rakhna
-                if "https://" in i:
-                    parts = i.split("https://", 1)
-                    title = parts[0].strip(": ").strip()
-                    url = "https://" + parts[1].strip()
-                elif "http://" in i:
-                    parts = i.split("http://", 1)
-                    title = parts[0].strip(": ").strip()
-                    url = "http://" + parts[1].strip()
-                else:
-                    parts = i.split("://", 1)
-                    title = parts[0].strip(": ").strip()
-                    url = parts[1].strip()
-
-                # List mein add karna
-                links.append([title, url])
-
-                # Extension check karna
-                if ".pdf" in url:
-                    pdf_count += 1
-                elif any(ext in url.lower() for ext in [".png", ".jpeg", ".jpg"]):
-                    img_count += 1
-                elif ".zip" in url:
-                    zip_count += 1
-                else:
-                    video_count += 1
+            i = i.strip()
+            # Agar line khali hai ya usme link nahi hai, to use chhod do (jaise pehli line)
+            if not i or "://" not in i:
+                continue
+                
+            # Title aur URL ko perfectly alag karna
+            if "https://" in i:
+                parts = i.split("https://", 1)
+                title = parts[0].strip(": ").strip()
+                url = "https://" + parts[1].strip()
+            elif "http://" in i:
+                parts = i.split("http://", 1)
+                title = parts[0].strip(": ").strip()
+                url = "http://" + parts[1].strip()
+            else:
+                parts = i.split("://", 1)
+                title = parts[0].strip(": ").strip()
+                url = "https://" + parts[1].strip()
+            
+            # Agar title khali reh gaya ho to
+            if not title:
+                title = f"File_{len(links)+1}"
+                
+            # Sabse important: [Title, URL] ki exact jodi list me add karna
+            links.append([title, url])
+            
+            # Counts badhana (Lower case check ke sath safe extensions)
+            if ".pdf" in url.lower():
+                pdf_count += 1
+            elif any(ext in url.lower() for ext in [".png", ".jpeg", ".jpg"]):
+                img_count += 1
+            elif ".zip" in url.lower():
+                zip_count += 1
+            else:
+                video_count += 1
+                
         os.remove(x)
-    except:
-        await m.reply_text("😶𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗙𝗶𝗹𝗲 𝗜𝗻𝗽𝘂𝘁😶")
-        os.remove(x)
+    except Exception as e:
+        await m.reply_text(f"😶𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗙𝗶𝗹𝗲 𝗜𝗻𝗽𝘂𝘁😶\nDetails: {str(e)}")
+        if os.path.exists(x):
+            os.remove(x)
         return
    
     await editable.edit(f"`𝗧𝗼𝘁𝗮𝗹 🔗 𝗟𝗶𝗻𝗸𝘀 𝗙𝗼𝘂𝗻𝗱 𝗔𝗿𝗲 {len(links)}\n\n🔹Img : {img_count}  🔹Pdf : {pdf_count}\n🔹Zip : {zip_count}  🔹Video : {video_count}\n\n𝗦𝗲𝗻𝗱 𝗙𝗿𝗼𝗺 𝗪𝗵𝗲𝗿𝗲 𝗬𝗼𝘂 𝗪𝗮𝗻𝘁 𝗧𝗼 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱.`")
