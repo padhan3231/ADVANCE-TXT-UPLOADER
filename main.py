@@ -804,7 +804,9 @@ async def upload(bot: Client, m: Message):
                         await bot.send_photo(chat_id=m.chat.id, photo=cpimg, caption=cpvod)
                         count +=1
                     except Exception as e:
-                        await m.reply_text(str(e))    
+        import traceback
+        error_details = traceback.format_exc()
+        await m.reply_text(f"⚠️ **Error Aagaya!**\n\n**Reason:** {str(e)}\n\n**Details:**\n`{error_details[-800:]}`")    
                         time.sleep(1)    
                         continue          
                         
