@@ -464,18 +464,38 @@ async def upload(bot: Client, m: Message):
     video_count = 0
     
     try:    
-        with open(x, "r") as f:
-            content = f.read()
-        content = content.split("\n")
+        with open(x, "r", encoding='utf-8') as f:
+            content = f.read().splitlines() # Ye saare khali Enter/spaces ko theek karega
         
         links = []
         for i in content:
+            i = i.strip() # Extra spaces hatana
+            if not i: 
+                continue # Agar line khali hai, to aage badho
+
+            # Agar line mein "://" hai tabhi kaam karenge
             if "://" in i:
-                url = i.split("://", 1)[1]
-                links.append(i.split("://", 1))
+                # Behtar tarika: "https://" ya "http://" ko bacha kar rakhna
+                if "https://" in i:
+                    parts = i.split("https://", 1)
+                    title = parts[0].strip(": ").strip()
+                    url = "https://" + parts[1].strip()
+                elif "http://" in i:
+                    parts = i.split("http://", 1)
+                    title = parts[0].strip(": ").strip()
+                    url = "http://" + parts[1].strip()
+                else:
+                    parts = i.split("://", 1)
+                    title = parts[0].strip(": ").strip()
+                    url = parts[1].strip()
+
+                # List mein add karna
+                links.append([title, url])
+
+                # Extension check karna
                 if ".pdf" in url:
                     pdf_count += 1
-                elif url.endswith((".png", ".jpeg", ".jpg")):
+                elif any(ext in url.lower() for ext in [".png", ".jpeg", ".jpg"]):
                     img_count += 1
                 elif ".zip" in url:
                     zip_count += 1
@@ -589,8 +609,7 @@ async def upload(bot: Client, m: Message):
             if len(links[i]) < 2:
                 continue
 
-            V = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
-            url = "https://" + V
+            url = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
 
             if "visionias" in url:
                 async with ClientSession() as session:
