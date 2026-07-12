@@ -584,16 +584,12 @@ async def upload(bot: Client, m: Message):
             count = 1
 
     try:
-        try:
         for i in range(count - 1, len(links)):
             
-            # --- SAFETY CHECK ---
-            # Agar line khali hai ya usme link nahi mila, to use chhod (skip) do
             if len(links[i]) < 2:
                 continue
-            # --------------------
 
-            V = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","") # .replace("mpd","m3u8")
+            V = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
             url = "https://" + V
 
             if "visionias" in url:
