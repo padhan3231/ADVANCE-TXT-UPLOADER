@@ -609,6 +609,9 @@ async def upload(bot: Client, m: Message):
             if len(links[i]) < 2:
                 continue
 
+            # Yahan hum print lagayenge:
+            print(f"Trying to process link index {i}: {links[i]}") 
+
             url = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
 
             if "visionias" in url:
