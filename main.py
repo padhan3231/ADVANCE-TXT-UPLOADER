@@ -16,7 +16,7 @@ import cloudscraper
 import datetime
 import random
 import ffmpeg
-import logging 
+import logging
 import yt_dlp
 from subprocess import getstatusoutput
 from aiohttp import web
@@ -24,29 +24,21 @@ from core import *
 from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 from yt_dlp import YoutubeDL
-import yt_dlp as youtube_dl
-import cloudscraper
-import m3u8
 import core as helper
 from utils import progress_bar
 from vars import API_ID, API_HASH, BOT_TOKEN
 from aiohttp import ClientSession
 from pyromod import listen
-from subprocess import getstatusoutput
-from pytube import YouTube
+from pytube import YouTube, Playlist
 
 from pyrogram import Client, filters
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import FloodWait
 from pyrogram.errors.exceptions.bad_request_400 import StickerEmojiInvalid
-from pyrogram.types.messages_and_media import message
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 cookies_file_path = os.getenv("COOKIES_FILE_PATH", "youtube_cookies.txt")
 
-#pwimg = "https://graph.org/file/8add8d382169e326f67e0-3bf38f92e52955e977.jpg"
-#ytimg = "https://graph.org/file/3aa806c302ceec62e6264-60ced740281395f68f.jpg"
 cpimg = "https://graph.org/file/5ed50675df0faf833efef-e102210eb72c1d5a17.jpg"  
-
 
 async def show_random_emojis(message):
     emojis = ['🎊', '🔮', '😎', '⚡️', '🚀', '✨', '💥', '🎉', '🥂', '🍾', '🦠', '🤖', '❤️‍🔥', '🕊️', '💃', '🥳','🐅','🦁']
@@ -60,7 +52,7 @@ OWNER_ID = 5459283619 # Replace with the actual owner's user ID
 SUDO_USERS = [5459283619]
 
 # ✅ Multiple AUTH CHANNELS allowed
-AUTH_CHANNELS = [-1002605113558,-1002663510614]  # Add more channel IDs here
+AUTH_CHANNELS = [-1002605113558, -1002663510614]  # Add more channel IDs here
 
 # Function to check if a user is authorized
 def is_authorized(user_id: int) -> bool:
@@ -70,12 +62,12 @@ def is_authorized(user_id: int) -> bool:
         or user_id in AUTH_CHANNELS  # ✅ Checks if user_id matches any channel ID
     )
 
-
 bot = Client(
     "bot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN)
+    bot_token=BOT_TOKEN
+)
 
 # Sudo command to add/remove sudo users
 @bot.on_message(filters.command("sudo"))
@@ -115,16 +107,12 @@ async def sudo_command(bot: Client, message: Message):
 
 # Inline keyboard for start command
 keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton("🇮🇳ʙᴏᴛ ᴍᴀᴅᴇ ʙʏ🇮🇳" ,url=f"https://t.me/Tushar0125") ],
-                    [
-                    InlineKeyboardButton("🔔ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ🔔" ,url="https://t.me/TxtToVideoUpdateChannel") ],
-                    [
-                    InlineKeyboardButton("🦋ғᴏʟʟᴏᴡ ᴜs🦋" ,url="https://t.me/TxtToVideoUpdateChannel")                              
-                ],           
-            ]
-      )
+    [
+        [InlineKeyboardButton("🇮🇳ʙᴏᴛ ᴍᴀᴅᴇ ʙʏ🇮🇳", url="https://t.me/Tushar0125")],
+        [InlineKeyboardButton("🔔ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ🔔", url="https://t.me/TxtToVideoUpdateChannel")],
+        [InlineKeyboardButton("🦋ғᴏʟʟᴏᴡ ᴜs🦋", url="https://t.me/TxtToVideoUpdateChannel")]           
+    ]
+)
     
 # Image URLs for the random image feature
 image_urls = [
@@ -146,8 +134,7 @@ image_urls = [
     "https://graph.org/file/90c9f79ec52e08e5a3025-f9b73e9d17f3da5040.jpg",
     "https://graph.org/file/1aaf27a49b6bd81692064-30016c0a382f9ae22b.jpg",
     "https://graph.org/file/702aa31236364e4ebb2be-3f88759834a4b164a0.jpg",
-    "https://graph.org/file/d0c6b9f6566a564cd7456-27fb594d26761d3dc0.jpg",
-    # Add more image URLs as needed
+    "https://graph.org/file/d0c6b9f6566a564cd7456-27fb594d26761d3dc0.jpg"
 ]
 random_image_url = random.choice(image_urls) 
 # Caption for the image
@@ -165,12 +152,12 @@ async def start_command(bot: Client, message: Message):
     
 # Stop command handler
 @bot.on_message(filters.command("stop"))
-async def restart_handler(_, m: Message):
+async def stop_handler(_, m: Message):
     await m.reply_text("**𝗦𝘁𝗼𝗽𝗽𝗲𝗱**🚦", True)
     os.execl(sys.executable, sys.executable, *sys.argv)
 
 @bot.on_message(filters.command("restart"))
-async def restart_handler(_, m):
+async def restart_handler(_, m: Message):
     if not is_authorized(m.from_user.id):
         await m.reply_text("**🚫 You are not authorized to use this command.**")
         return
@@ -185,10 +172,7 @@ async def cookies_handler(client: Client, m: Message):
     if not is_authorized(m.from_user.id):
         await m.reply_text("🚫 You are not authorized to use this command.")
         return
-    """
-    Command: /cookies
-    Allows any user to upload a cookies file dynamically.
-    """
+    
     await m.reply_text(
         "𝗣𝗹𝗲𝗮𝘀𝗲 𝗨𝗽𝗹𝗼𝗮𝗱 𝗧𝗵𝗲 𝗖𝗼𝗼𝗸𝗶𝗲𝘀 𝗙𝗶𝗹𝗲 (.𝘁𝘅𝘁 𝗳𝗼𝗿𝗺𝗮𝘁).",
         quote=True
@@ -215,20 +199,19 @@ async def cookies_handler(client: Client, m: Message):
             target_file.write(cookies_content)
 
         await input_message.reply_text(
-            "✅ 𝗖𝗼𝗼𝗸𝗶𝗲𝘀 𝗨𝗽𝗱𝗮𝘁𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆.\n\𝗻📂 𝗦𝗮𝘃𝗲𝗱 𝗜𝗻 youtube_cookies.txt."
+            "✅ 𝗖𝗼𝗼𝗸𝗶𝗲𝘀 𝗨𝗽𝗱𝗮𝘁𝗲𝗱 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆.\n\n📂 𝗦𝗮𝘃𝗲𝗱 𝗜𝗻 youtube_cookies.txt."
         )
 
     except Exception as e:
         await m.reply_text(f"⚠️ An error occurred: {str(e)}")
 
 # Define paths for uploaded file and processed file
-UPLOAD_FOLDER = '/path/to/upload/folder'
-EDITED_FILE_PATH = '/path/to/save/edited_output.txt'
+UPLOAD_FOLDER = './upload'  # relative path is safer
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+EDITED_FILE_PATH = './edited_output.txt'
 
 @bot.on_message(filters.command('e2t'))
 async def edit_txt(client, message: Message):
-    
-
     # Prompt the user to upload the .txt file
     await message.reply_text(
         "🎉 **Welcome to the .txt File Editor!**\n\n"
@@ -260,12 +243,11 @@ async def edit_txt(client, message: Message):
     if user_response.text:
         user_response_text = user_response.text.strip().lower()
         if user_response_text == 'd':
-            # Handle default file name logic (e.g., use the original file name)
             final_file_name = file_name
         else:
             final_file_name = user_response_text + '.txt'
     else:
-        final_file_name = file_name  # Default to the uploaded file name
+        final_file_name = file_name
 
     # Read and process the uploaded file
     try:
@@ -281,36 +263,30 @@ async def edit_txt(client, message: Message):
     for line in content:
         line = line.strip()
         if line and ":" in line:
-            # Split the line by the first ":" to separate title and URL
             title, url = line.split(":", 1)
             title, url = title.strip(), url.strip()
 
-            # Add the title and URL to the dictionary
             if title in subjects:
                 subjects[title]["links"].append(url)
             else:
                 subjects[title] = {"links": [url], "topics": []}
 
-            # Set the current subject
             current_subject = title
         elif line.startswith("-") and current_subject:
-            # Add topics under the current subject
             subjects[current_subject]["topics"].append(line.strip("- ").strip())
 
-    # Sort the subjects alphabetically and topics within each subject
+    # Sort the subjects alphabetically
     sorted_subjects = sorted(subjects.items())
     for title, data in sorted_subjects:
         data["topics"].sort()
 
-    # Save the edited file to the defined path with the final file name
+    # Save the edited file
     try:
         final_file_path = os.path.join(UPLOAD_FOLDER, final_file_name)
         with open(final_file_path, 'w', encoding='utf-8') as f:
             for title, data in sorted_subjects:
-                # Write title and its links
                 for link in data["links"]:
                     f.write(f"{title}:{link}\n")
-                # Write topics under the title
                 for topic in data["topics"]:
                     f.write(f"- {topic}\n")
     except Exception as e:
@@ -326,12 +302,10 @@ async def edit_txt(client, message: Message):
     except Exception as e:
         await message.reply_text(f"🚨 **Error**: Unable to send the file.\n\nDetails: {e}")
     finally:
-        # Clean up the temporary file
         if os.path.exists(uploaded_file_path):
             os.remove(uploaded_file_path)
-
-from pytube import Playlist
-import youtube_dl
+        if os.path.exists(final_file_path):
+            os.remove(final_file_path)
 
 # --- Configuration ---
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -339,16 +313,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # --- Utility Functions ---
 
 def sanitize_filename(name):
-    """
-    Sanitizes a string to create a valid filename.
-    """
     return re.sub(r'[^\w\s-]', '', name).strip().replace(' ', '_')
 
 def get_videos_with_ytdlp(url):
-    """
-    Retrieves video titles and URLs using `yt-dlp`.
-    If a title is not available, only the URL is saved.
-    """
     ydl_opts = {
         'quiet': True,
         'extract_flat': True,
@@ -372,10 +339,6 @@ def get_videos_with_ytdlp(url):
         return None, None
 
 def save_to_file(videos, name):
-    """
-    Saves video titles and URLs to a .txt file.
-    If a title is unavailable, only the URL is saved.
-    """
     filename = f"{sanitize_filename(name)}.txt"
     with open(filename, 'w', encoding='utf-8') as file:
         for title, url in videos.items():
@@ -389,9 +352,6 @@ def save_to_file(videos, name):
 
 @bot.on_message(filters.command('yt2txt'))
 async def ytplaylist_to_txt(client: Client, message: Message):
-    """
-    Handles the extraction of YouTube playlist/channel videos and sends a .txt file.
-    """
     user_id = message.chat.id
     if user_id != OWNER_ID:
         await message.reply_text("**🚫 You are not authorized to use this command.\n\n🫠 This Command is only for owner.**")
@@ -411,13 +371,12 @@ async def ytplaylist_to_txt(client: Client, message: Message):
         file_name = save_to_file(videos, title)
         await message.reply_document(
             document=file_name, 
-            caption=f"`{title}`\n\n📥 𝗘𝘅𝘁𝗿𝗮𝗰𝘁𝗲𝗱 𝗕𝘆 ➤ 𝗧𝘂𝘀𝗵𝗮𝗿"
+            caption=f"`{title}`\n\n📥 𝗘𝘅𝘁𝗿𝗮𝗰𝘁𝗲dw 𝗕𝘆 ➤ 𝗧𝘂𝘀𝗵𝗮𝗿"
         )
         os.remove(file_name)
     else:
         await message.reply_text("⚠️ **Unable to retrieve videos. Please check the URL.**")
 
-        
 # List users command
 @bot.on_message(filters.command("userlist") & filters.user(SUDO_USERS))
 async def list_users(client: Client, msg: Message):
@@ -426,7 +385,6 @@ async def list_users(client: Client, msg: Message):
         await msg.reply_text(f"SUDO_USERS :\n{users_list}")
     else:
         await msg.reply_text("No sudo users.")
-
 
 # Help command
 @bot.on_message(filters.command("help"))
@@ -442,7 +400,6 @@ async def help_command(client: Client, msg: Message):
         "`/sudo add` - Add user or group or channel (owner)🎊\n\n"
         "`/sudo remove` - Remove user or group or channel (owner)❌\n\n"
         "`/userlist` - List of sudo user or group or channel📜\n\n"
-       
     )
     await msg.reply_text(help_text)
 
@@ -454,9 +411,9 @@ async def upload(bot: Client, m: Message):
         return
 
     editable = await m.reply_text(f"⚡𝗦𝗘𝗡𝗗 𝗧𝗫𝗧 𝗙𝗜𝗟𝗘⚡")
-    input: Message = await bot.listen(editable.chat.id)
-    x = await input.download()
-    await input.delete(True)
+    input_msg: Message = await bot.listen(editable.chat.id)
+    x = await input_msg.download()
+    await input_msg.delete(True)
     file_name, ext = os.path.splitext(os.path.basename(x))
     pdf_count = 0
     img_count = 0
@@ -470,11 +427,9 @@ async def upload(bot: Client, m: Message):
         links = []
         for i in content:
             i = i.strip()
-            # Agar line khali hai ya usme link nahi hai, to use chhod do (jaise pehli line)
             if not i or "://" not in i:
                 continue
                 
-            # Title aur URL ko perfectly alag karna
             if "https://" in i:
                 parts = i.split("https://", 1)
                 title = parts[0].strip(": ").strip()
@@ -488,14 +443,11 @@ async def upload(bot: Client, m: Message):
                 title = parts[0].strip(": ").strip()
                 url = "https://" + parts[1].strip()
             
-            # Agar title khali reh gaya ho to
             if not title:
                 title = f"File_{len(links)+1}"
                 
-            # Sabse important: [Title, URL] ki exact jodi list me add karna
             links.append([title, url])
             
-            # Counts badhana (Lower case check ke sath safe extensions)
             if ".pdf" in url.lower():
                 pdf_count += 1
             elif any(ext in url.lower() for ext in [".png", ".jpeg", ".jpg"]):
@@ -507,7 +459,7 @@ async def upload(bot: Client, m: Message):
                 
         os.remove(x)
     except Exception as e:
-        await m.reply_text(f"😶𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗙𝗶𝗹𝗲 𝗜𝗻𝗽𝘂𝘁😶\nDetails: {str(e)}")
+        await m.reply_text(f"😶 𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗙𝗶𝗹𝗲 𝗜𝗻𝗽𝘂𝘁 😶\nDetails: {str(e)}")
         if os.path.exists(x):
             os.remove(x)
         return
@@ -529,7 +481,6 @@ async def upload(bot: Client, m: Message):
     else:
         b_name = raw_text0
     
-
     await editable.edit("**📸 𝗘𝗻𝘁𝗲𝗿 𝗥𝗲𝘀𝗼𝗹𝘂𝘁𝗶𝗼𝗻 📸**\n➤ `144`\n➤ `240`\n➤ `360`\n➤ `480`\n➤ `720`\n➤ `1080`")
     input2: Message = await bot.listen(editable.chat.id)
     raw_text2 = input2.text
@@ -550,15 +501,12 @@ async def upload(bot: Client, m: Message):
         else: 
             res = "UN"
     except Exception:
-            res = "UN"
+        res = "UN"
     
-    
-
     await editable.edit("📛 𝗘𝗻𝘁𝗲𝗿 𝗬𝗼𝘂𝗿 𝗡𝗮𝗺𝗲 📛\n\n🐥 𝗦𝗲𝗻𝗱 `1` 𝗙𝗼𝗿 𝗨𝘀𝗲 𝗗𝗲𝗳𝗮𝘂𝗹𝘁 🐥")
     input3: Message = await bot.listen(editable.chat.id)
     raw_text3 = input3.text
     await input3.delete(True)
-    # Default credit message with link
     credit = "️[𝗧𝘂𝘀𝗵𝗮𝗿](https://t.me/Tushar0125)"
     if raw_text3 == '1':
         CR = '[𝗧𝘂𝘀𝗵𝗮𝗿](https://t.me/Tushar0125)'
@@ -567,61 +515,34 @@ async def upload(bot: Client, m: Message):
             text, link = raw_text3.split(',')
             CR = f'[{text.strip()}]({link.strip()})'
         except ValueError:
-            CR = raw_text3  # In case the input is not in the expected format, use the raw text
+            CR = raw_text3
     else:
         CR = credit
-    #highlighter  = f"️ ⁪⁬⁮⁮⁮"
-    #if raw_text3 == 'Robin':
-        #MR = highlighter 
-    #else:
-        #MR = raw_text3
    
-    await editable.edit("**𝗘𝗻𝘁𝗲𝗿 𝗣𝘄 𝗧𝗼𝗸𝗲𝗻 𝗙𝗼𝗿 𝗣𝘄 𝗨𝗽𝗹𝗼𝗮𝗱𝗶𝗻𝗴 𝗼𝗿 𝗦𝗲𝗻𝗱 `3` 𝗙𝗼𝗿 𝗢𝘁𝗵𝗲𝗿𝘀**")
+    await editable.edit("**𝗘𝗻𝘁𝗲𝗿 𝗣𝘄 𝗧𝗼𝗸𝗲𝗻 𝗙𝗼𝗿 𝗣𝘄 𝗨𝗽𝗹𝗼𝗮𝗱𝗶𝗻𝗴 𝗼𝗿 𝗦𝗲𝗻𝗱 `3` 𝗙𝗼𝗿 𝗢𝘁𝗵𝗲𝗿s**")
     input4: Message = await bot.listen(editable.chat.id)
     raw_text4 = input4.text
     await input4.delete(True)
-    if raw_text4 == 3:
-        MR = token
+    if raw_text4 == "3":
+        MR = "your_default_token_here" # Change this with your actual fallback token
     else:
         MR = raw_text4
 
-    
-
-    await editable.edit("𝗡𝗼𝘄 𝗦𝗲𝗻𝗱 𝗧𝗵𝗲 𝗧𝗵𝘂𝗺𝗯 𝗨𝗿𝗹 𝗘𝗴 » https://graph.org/file/13a89d77002442255efad-989ac290c1b3f13b44.jpg\n\n𝗢𝗿 𝗜𝗳 𝗗𝗼𝗻'𝘁 𝗪𝗮𝗻𝘁 𝗧𝗵𝘂𝗺𝗯𝗻𝗮𝗶𝗹 𝗦𝗲𝗻𝗱 = 𝗻𝗼")
-    input6 = message = await bot.listen(editable.chat.id)
+    await editable.edit("𝗡𝗼𝘄 𝗦𝗲𝗻𝗱 𝗧𝗵𝗲 𝗧𝗵𝘂𝗺𝗯 𝗨𝗿𝗹 𝗘𝗴 » https://graph.org/file/13a89d77002442255efad-989ac290c1b3f13b44.jpg\n\n𝗢𝗿 𝗜𝗳 𝗗𝗼𝗻'𝘁 𝗪𝗮𝗻𝘁 𝗧𝗵𝘂𝗺𝒃𝗻𝗮𝗶𝗹 𝗦𝗲𝗻𝗱 = 𝗻𝗼")
+    input6 = await bot.listen(editable.chat.id)
     raw_text6 = input6.text
     await input6.delete(True)
     await editable.delete()
 
-    #thumb = input6.text
-    #if thumb.startswith("http://") or thumb.startswith("https://"):
-        #getstatusoutput(f"wget '{thumb}' -O 'thumb.jpg'")
-        #thumb = "thumb.jpg"
-    #else:
     thumb = "no"
     failed_count = 0
-    if len(links) == 1:
+    try:
+        count = int(raw_text)
+    except (ValueError, TypeError):
         count = 1
-    else:
-        try:
-            count = int(raw_text)
-        except (ValueError, TypeError):
-            count = 1
-
-    # ... upar ka purana code ...
-    thumb = "no"
-    failed_count = 0
-    if len(links) == 1:
-        count = 1
-    else:
-        try:
-            count = int(raw_text)
-        except (ValueError, TypeError):
-            count = 1
 
     try:
         for i in range(count - 1, len(links)):
-            
             if not isinstance(links[i], list) or len(links[i]) < 2:
                 print(f"Skipping index {i} due to invalid list format")
                 continue
@@ -640,8 +561,8 @@ async def upload(bot: Client, m: Message):
                 try:
                     async with ClientSession() as session:
                         async with session.get(url, headers={'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Language': 'en-US,en;q=0.9', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Pragma': 'no-cache', 'Referer': 'http://www.visionias.in/', 'Sec-Fetch-Dest': 'iframe', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'cross-site', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Linux; Android 12; RMX2121) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Mobile Safari/537.36', 'sec-ch-ua': '"Chromium";v="107", "Not=A?Brand";v="24"', 'sec-ch-ua-mobile': '?1', 'sec-ch-ua-platform': '"Android"',}) as resp:
-                                text = await resp.text()
-                                url = re.search(r"(https://.*?playlist.m3u8.*?)\"", text).group(1)
+                            text = await resp.text()
+                            url = re.search(r"(https://.*?playlist.m3u8.*?)\"", text).group(1)
                 except Exception:
                     pass
 
@@ -698,7 +619,7 @@ async def upload(bot: Client, m: Message):
                 bcov = 'bcov_auth=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3MzUxMzUzNjIsImNvbiI6eyJpc0FkbWluIjpmYWxzZSwiYXVzZXIiOiJVMFZ6TkdGU2NuQlZjR3h5TkZwV09FYzBURGxOZHowOSIsImlkIjoiYmt3cmVIWmxZMFUwVXpkSmJYUkxVemw2ZW5Oclp6MDkiLCJmaXJzdF9uYW1lIjoiY25GdVpVdG5kRzR4U25sWVNGTjRiVW94VFhaUVVUMDkiLCJlbWFpbCI6ImFFWllPRXhKYVc1NWQyTlFTazk0YmtWWWJISTNRM3BKZW1OUVdIWXJWWE0wWldFNVIzZFNLelE0ZHowPSIsInBob25lIjoiZFhSNlFrSm9XVlpCYkN0clRUWTFOR3REU3pKTVVUMDkiLCJhdmF0YXIiOiJLM1ZzY1M4elMwcDBRbmxrYms4M1JEbHZla05pVVQwOSIsInJlZmVycmFsX2NvZGUiOiJhVVZGZGpBMk9XSnhlbXRZWm14amF6TTBVazQxUVQwOSIsImRldmljZV90eXBlIjoid2ViIiwiZGV2aWNlX3ZlcnNpb24iOiJDaHJvbWUrMTE5IiwiZGV2aWNlX21vZGVsIjoiY2hyb21lIiwicmVtb3RlX2FkZHIiOiIyNDA5OjQwYzI6MjA1NTo5MGQ0OjYzYmM6YTNjOTozMzBiOmIxOTkifX0.Kifitj1wCe_ohkdclvUt7WGuVBsQFiz7eezXoF1RduDJi4X7egejZlLZ0GCZmEKBwQpMJLvrdbAFIRniZoeAxL4FZ-pqIoYhH3PgZU6gWzKz5pdOCWfifnIzT5b3rzhDuG7sstfNiuNk9f-HMBievswEIPUC_ElazXdZPPt1gQqP7TmVg2Hjj6-JBcG7YPSqa6CUoXNDHpjWxK_KREnjWLM7vQ6J3vF1b7z_S3_CFti167C6UK5qb_turLnOUQzWzcwEaPGB3WXO0DAri6651WF33vzuzeclrcaQcMjum8n7VQ0Cl3fqypjaWD30btHQsu5j8j3pySWUlbyPVDOk-g'
                 url = url.split("bcov_auth")[0]+bcov
             
-           if "jw-prod" in url:
+            if "jw-prod" in url:
                 cmd = f'yt-dlp -o "{name}.mp4" "{url}"'
             elif "webvideos.classplusapp." in url or "classplusapp" in url:
                 cmd = f'yt-dlp --impersonate chrome --add-header "x-access-token:{str(raw_text4)}" --add-header "referer:https://web.classplusapp.com/" --add-header "x-cdn-tag:empty" -f "{ytf}" "{url}" -o "{name}.mp4"'
@@ -749,95 +670,13 @@ async def upload(bot: Client, m: Message):
                 elif "media-cdn.classplusapp.com/drm/" in url:
                     try:
                         await bot.send_photo(chat_id=m.chat.id, photo=cpimg, caption=cpvod)
-                        count +=1
+                        count += 1
                     except Exception as e:
-                        await m.reply_text(str(e))    
-                        time.sleep(1)    
-                        continue          
-                        
-                elif any(ext in url.lower() for ext in [".jpg", ".jpeg", ".png"]):
-                    try:
-                        await asyncio.sleep(4)
-                        url = url.replace(" ", "%20")
-                        scraper = cloudscraper.create_scraper()
-                        response = scraper.get(url)
-                        if response.status_code == 200:
-                            with open(f'{name}.jpg', 'wb') as file:
-                                file.write(response.content)
-                            await asyncio.sleep(2)
-                            copy = await bot.send_photo(chat_id=m.chat.id, photo=f'{name}.jpg', caption=cimg)
-                            count += 1
-                            os.remove(f'{name}.jpg')
-                        else:
-                            await m.reply_text(f"Failed to download Image: {response.status_code} {response.reason}")
-                    except FloodWait as e:
-                        await m.reply_text(str(e))
-                        await asyncio.sleep(2)
-                        return  
-                    except Exception as e:
-                        await m.reply_text(f"An error occurred: {str(e)}")
-                        await asyncio.sleep(4)
-                        
-                elif ".zip" in url:
-                    try:
-                        cmd = f'yt-dlp -o "{name}.zip" "{url}"'
-                        download_cmd = f"{cmd} -R 25 --fragment-retries 25"
-                        os.system(download_cmd)
-                        copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.zip', caption=cczip)
-                        count += 1
-                        os.remove(f'{name}.zip')
-                    except FloodWait as e:
-                        await m.reply_text(str(e))
-                        time.sleep(e.x)
-                        count += 1
-                        continue
-                        
-                elif ".pdf" in url:
-                    try:
-                        cmd = f'yt-dlp -o "{name}.pdf" "{url}"'
-                        download_cmd = f"{cmd} -R 25 --fragment-retries 25"
-                        os.system(download_cmd)
-                        copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
-                        count += 1
-                        os.remove(f'{name}.pdf')
-                    except FloodWait as e:
-                        await m.reply_text(str(e))
-                        time.sleep(e.x)
-                        continue
-                else:
-                    emoji_message = await show_random_emojis(message)
-                    remaining_links = len(links) - count
-                    Show = f"**🍁 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗𝗜𝗡𝗚 🍁**\n\n**📝ɴᴀᴍᴇ » ** `{name}\n\n🔗ᴛᴏᴛᴀʟ ᴜʀʟ » {len(links)}\n\n🗂️ɪɴᴅᴇx » {str(count)}/{len(links)}\n\n🌐ʀᴇᴍᴀɪɴɪŋ ᴜʀʟ » {remaining_links}\n\n❄ǫᴜᴀʟɪᴛʏ » {res}`\n\n**🔗ᴜʀʟ » ** `{url}`\n\n🤖𝗕𝗢𝗧 𝗠𝗔𝗗𝗘 𝗕𝗬 ➤ 𝗧𝗨𝗦𝗛𝗔𝗥\n\n🙂 चलो फिर से अजनबी बन जायें 🙂"
-                    prog = await m.reply_text(Show)
-                    res_file = await helper.download_video(url, cmd, name)
-                    filename = res_file
-                    await prog.delete(True)
-                    await emoji_message.delete()
-                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
-                    count += 1
-                    time.sleep(1)
-
+                        await m.reply_text(f"Error media-cdn: {e}")
             except Exception as e:
-                await m.reply_text(f'‼️𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗶𝗻𝗴 𝗙𝗮𝗶𝗹𝗲𝗱‼️\n\n📝CN𝗮𝗺𝗲 » `{name}`\n\n🔗𝗨𝗿𝗹 » <a href="{url}">__**Click Here to See Link**__</a>`')
-                count += 1
-                failed_count += 1
-                continue   
+                await m.reply_text(f"Error in processing loop: {e}")
+    except Exception as main_e:
+        print(f"Main loop error: {main_e}")
 
-    except Exception as e:
-        await m.reply_text(f"⚠️ **Error Occurred:** {str(e)}")
-
-    await m.reply_text(f"`✨𝗕𝗔𝗧𝗖𝗛 𝗦𝗨𝗠𝗠𝗔𝗥𝗬✨\n\n"
-                       f"▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
-                       f"📛Target Range » ({raw_text} to {len(links)})\n"
-                       f"📚𝗕𝗮𝘁𝗰𝗵 𝗡𝗮𝗺𝗲 » {b_name}\n\n"
-                       f"▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
-                       f"✨𝗧𝗫𝗧 𝗦𝗨𝗠𝗠𝗔𝗥𝗬✨ : {len(links)}\n"
-                       f"▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
-                       f"🔹𝗩𝗶𝗱𝗲𝗼 » {video_count}\n🔹𝗣𝗱𝗳 » {pdf_count}\n🔹𝗜𝗺𝗴 » {img_count}\n🔹𝗭𝗶𝗽 » {zip_count}\n🔹𝗙𝗮𝗶𝗹𝗲𝗱 𝗨𝗿𝗹 » {failed_count}\n\n"
-                       f"▬▬▬▬▬▬▬▬▬▬▬▬▬▬\n"
-                       f"✅𝗦𝗧𝗔𝗧𝗨𝗦 » 𝗖𝗢𝗠𝗣𝗟𝗘𝗧𝗘𝗗`")
-    await m.reply_text(f"<pre><code>📥𝗘𝘅𝘁𝗿𝗮𝗰𝘁𝗲𝗱 𝗕𝘆 ➤『{CR}』</code></pre>")
-    await m.reply_text(f"<pre><code>『😏𝗥𝗲𝗮𝗰𝘁𝗶𝗼𝗻 𝗞𝗼𝗻 𝗗𝗲𝗴𝐚😏』</code></pre>")                 
-
-if __name__ == "__main__":
-    bot.run()
+# Run Bot
+bot.run()
